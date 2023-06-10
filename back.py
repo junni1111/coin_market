@@ -289,8 +289,8 @@ def purchaseCoin(seller, price, coin):
         update("user", "id", user['id'], tmp)
 
         seller = find("user", "id", seller)['data']
-        tmp = {"money": seller['money'] + coin * price, "coin": seller['coin'] - coin}
-        update("user", "id", seller, tmp)
+        tmp = {"money": seller['money'] + coin * price}
+        update("user", "id", seller['id'], tmp)
 
         deletePost(seller['id'], price, coin)
     return redirect(url_for("index"))
