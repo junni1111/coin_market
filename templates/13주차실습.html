@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header</title>
+  <style>
+    header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center; /* Add this line to vertically align items */
+      height: 60px;
+      padding: 0 40px;
+      box-shadow: 0px 1px 1px 0px #00000033;
+      background: #939393;
+      color: #fff;
+    }
+    .avatar {
+      background-color: #000000;
+      margin-left: 3px;
+    }
+    .menu {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+    .menu li {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- User logged in -->
+    <div>
+      <span>1000 ₩</span>
+      <span>/</span>
+      <span>10 Coin(s)</span>
+      <div class="avatar">KM</div>
+    </div>
+    <ul class="menu"> <!-- Move the ul element inside the header -->
+      <li>
+        <button>Deposit</button>
+      </li>
+      <li>
+        <button>Withdraw</button>
+      </li>
+      <li>
+        <button>Logout</button>
+      </li>
+    </ul>
+  </header>
+  <script>
+    const menuItems = document.querySelectorAll('.menu li');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        // Handle menu item click logic here
+      });
+    });
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MarketPlace</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    hr {
+      margin-top: 60px;
+      border: none;
+      border-top: 1px solid gray;
+    }
+    .coin-info {
+      display: flex;
+      align-items: center;
+      border: 3px solid gray;
+      padding: 8px;
+    }
+    .coin-title {
+      margin: 0;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    .coin-details {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+    }
+    .label {
+      margin-right: 6px;
+    }
+    .separator {
+      margin: 0 6px;
+    }
+  </style>
+</head>
+<body>
+  <hr>
+  <div class="coin-info">
+    <p class="coin-title">Coin</p>
+    <div class="coin-details">
+      <span class="label">Price:</span>
+      <span class="value">100</span>
+      <span class="separator">/</span>
+      <span class="label">Quantity:</span>
+      <span class="value">100</span>
+    </div>
+  </div>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trade</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .item-paper {
+      padding: 8px;
+      display: inline-block;
+      width: 200px;
+      margin-right: 10px;
+      background-color: #f2f2f2;
+    }
+    .item-title {
+      margin-bottom: 8px;
+      text-transform: capitalize;
+    }
+    .item-details {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .item-details span {
+      margin-right: 4px;
+    }
+    .buy-button-container {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 20px;
+    }
+    .buy-button {
+      background-color: #0000ff;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .buy-button:hover {
+      background-color: #0000cc;
+    }
+    .sell-button {
+      background-color: #0000ff;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 40px;
+    }
+    .sell-button-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .item-grid {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h2>Trade</h2>
+    <div class="sell-button-container">
+      <button class="sell-button">Sell</button>
+    </div>
+    <div class="item-grid">
+      <div class="item-paper">
+        <h6 class="item-title">Park</h6>
+        <div class="item-details">
+          <span>Price: 100</span>
+          <span>/</span>
+          <span>Quantity: 12</span>
+        </div>
+        <div class="buy-button-container">
+          <button class="buy-button">Buy</button>
+        </div>
+      </div>
+      <div class="item-paper">
+        <h6 class="item-title">Kim</h6>
+        <div class="item-details">
+          <span>Price: 110</span>
+          <span>/</span>
+          <span>Quantity: 1</span>
+        </div>
+        <div class="buy-button-container">
+          <button class="buy-button">Buy</button>
+        </div>
+      </div>
+      <div class="item-paper">
+        <h6 class="item-title">Lee</h6>
+        <div class="item-details">
+          <span>Price: 120</span>
+          <span>/</span>
+          <span>Quantity: 3</span>
+        </div>
+        <div class="buy-button-container">
+          <button class="buy-button">Buy</button>
+          
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
