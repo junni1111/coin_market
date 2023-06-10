@@ -9,9 +9,10 @@ db = cluster["coin_market"]
 
 def insert(table, data, key, value):
     collection = db[table]
-    temp = collection.find_one({key: value})
-    if temp:
-        return {'exist': True, 'data': temp}
+    if table != "price" and table != 'post':
+        temp = collection.find_one({key: value})
+        if temp:
+            return {'exist': True, 'data': temp}
 
     if table == 'user':
         data['coin'] = 0
@@ -33,6 +34,41 @@ def update(table, key, value, data):
 def delete(table, key, value):
     collection = db[table]
     collection.delete_one({key: value})
+
+
+def findPrice():
+    collection = db["price"]
+    temp = []
+    for x in collection.find(sort=[('_id', pymongo.DESCENDING)]):
+        temp.append(x)
+
+    print(temp[0])
+    return collection.find_one(sort=[('_id', pymongo.DESCENDING)])['price']
+
+
+def findPrices():
+    collection = db["price"]
+    temp = []
+    for x in collection.find(sort=[('_id', pymongo.DESCENDING)]):
+        temp.append(x)
+
+    return temp
+
+
+def findPost(seller, price, coin):
+    tmp = {'seller': seller, 'price': price, 'coin': coin}
+    collection = db['post']
+
+    return collection.find_one(tmp)
+
+
+def findPosts():
+    collection = db["post"]
+    temp = []
+    for x in collection.find(sort=[('_id', pymongo.DESCENDING)]):
+        temp.append(x)
+
+    return temp
 
 
 def find(table, key, value):

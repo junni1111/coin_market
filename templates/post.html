@@ -6,7 +6,7 @@
         name="viewport"/>
   <meta content="" name="description"/>
   <meta content="" name="author"/>
-  <title>Simple Sidebar - Start Bootstrap Template</title>
+  <title>Coin Market</title>
   <!-- Favicon-->
   <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
   <!-- Core theme CSS (includes Bootstrap)-->
@@ -23,9 +23,9 @@
          href="{{ url_for('index') }}">Main</a>
       {% if result['login'] == 1 %}
       <a class="list-group-item list-group-item-action list-group-item-light p-3"
-         href="{{ url_for('sell') }}">Sell</a>
+         href="{{ url_for('market') }}">Market</a>
       <a class="list-group-item list-group-item-action list-group-item-light p-3"
-         href="{{ url_for('purchase') }}">Purchase</a>
+         href="{{ url_for('post') }}">Post</a>
       <a class="list-group-item list-group-item-action list-group-item-light p-3"
          href="{{ url_for('bank') }}">Bank</a>
       {% endif %}
@@ -51,7 +51,7 @@
               result['market_coin'] }}</a>
             </li>
             <li class="nav-item active"><a class="nav-link"
-                                           href="">Market Money : {{
+                                           href="">Coin Price : {{
               result['market_money'] }}</a>
             </li>
             {% if result['login'] == 1 %}
@@ -76,24 +76,31 @@
               }}</a>
             </li>
             {% endif %}
+            {% if result['admin'] == 1 %}
+            <li class="nav-item active"><a class="nav-link"
+                                           href="{{ url_for('price') }}">코인 가격
+              수정</a>
+            </li>
+            {% endif %}
           </ul>
         </div>
       </div>
     </nav>
     <!-- Page content-->
     <div class="container-fluid">
-      <h1 class="mt-4">Simple Sidebar</h1>
-      <p>The starting state of the menu will appear collapsed on smaller
-        screens, and will appear non-collapsed on larger screens. When toggled
-        using the button below, the menu will change.</p>
-      <p>
-        Make sure to keep all page content within the
-        <code>#page-content-wrapper</code>
-        . The top navbar is optional, and just for demonstration. Just create an
-        element with the
-        <code>#sidebarToggle</code>
-        ID which will toggle the menu when clicked.
-      </p>
+      <form action="/postcoin" method="post">
+        <input id="coin" name="coin" required type="text" value>
+        <button type="submit">코인 팔기</button>
+      </form>
+      <ul>
+        {% for post in result['post'] %}
+        <li><a class="nav-link"
+               href="{{ url_for('purchaseCoin', seller = post['seller'], price = post['price'], coin = post['coin']) }}">판매자
+          : {{ post['seller'] }}, 개수 : {{ post['coin'] }}, 가격 : {{
+          post['price'] }}</a>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>

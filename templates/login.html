@@ -6,7 +6,7 @@
         name="viewport"/>
   <meta content="" name="description"/>
   <meta content="" name="author"/>
-  <title>Simple Sidebar - Start Bootstrap Template</title>
+  <title>Coin Market</title>
   <!-- Favicon-->
   <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
   <!-- Core theme CSS (includes Bootstrap)-->
@@ -23,9 +23,9 @@
          href="{{ url_for('index') }}">Main</a>
       {% if result['login'] == 1 %}
       <a class="list-group-item list-group-item-action list-group-item-light p-3"
-         href="{{ url_for('sell') }}">Sell</a>
+         href="{{ url_for('market') }}">Market</a>
       <a class="list-group-item list-group-item-action list-group-item-light p-3"
-         href="{{ url_for('purchase') }}">Purchase</a>
+         href="{{ url_for('post') }}">Post</a>
       <a class="list-group-item list-group-item-action list-group-item-light p-3"
          href="{{ url_for('bank') }}">Bank</a>
       {% endif %}
@@ -66,6 +66,12 @@
             <li class="nav-item active"><a class="nav-link"
                                            href="">Money : {{ result['money']
               }}</a>
+            </li>
+            {% endif %}
+            {% if result['admin'] == 1 %}
+            <li class="nav-item active"><a class="nav-link"
+                                           href="{{ url_for('price') }}">코인 가격
+              수정</a>
             </li>
             {% endif %}
           </ul>

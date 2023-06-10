@@ -88,11 +88,10 @@
     </nav>
     <!-- Page content-->
     <div class="container-fluid">
-      <ul>
-        {% for price in result['price'] %}
-        <li> 가격 : {{ price['price'] }}, 시간 : {{ price['time'] }}</li>
-        {% endfor %}
-      </ul>
+      <form action="/change" method="post">
+        <input id="price" name="price" required type="text" value>
+        <button type="submit">코인 가격 수정</button>
+      </form>
     </div>
   </div>
 </div>

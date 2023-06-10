@@ -33,54 +33,63 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    value = {'login': 0}
+    value = {'login': 0, 'admin': 0}
     if session.get("id"):
         temp = find("user", "id", session.get("id"))
         value = temp['data']
         value['login'] = 1
+        if value['id'] == 'admin':
+            value['admin'] = 1
         print(value)
 
     market = find("market", "name", "market")
+    value['price'] = findPrices()
     value['market_coin'] = market['data']['coin']
-    value['market_money'] = market['data']['money']
+    value['market_money'] = value['price'][0]['price']
+    print(value['price'])
 
     return render_template('index.html', result=value)
 
 
-@app.route('/sell')
-def sell():
-    value = {'login': 0}
+@app.route('/market')
+def market():
+    value = {'login': 0, 'admin': 0}
     if session.get("id"):
         temp = find("user", "id", session.get("id"))
         value = temp['data']
         value['login'] = 1
+        if value['id'] == 'admin':
+            value['admin'] = 1
         print(value)
-    else:
-        return redirect(url_for("index"))
 
     market = find("market", "name", "market")
+    value['price'] = findPrices()
     value['market_coin'] = market['data']['coin']
-    value['market_money'] = market['data']['money']
+    value['market_money'] = value['price'][0]['price']
+    print(value['price'])
 
-    return render_template('sell.html', result=value)
+    return render_template('market.html', result=value)
 
 
-@app.route('/purchase')
-def purchase():
-    value = {'login': 0}
+@app.route('/post')
+def post():
+    value = {'login': 0, 'admin': 0}
     if session.get("id"):
         temp = find("user", "id", session.get("id"))
         value = temp['data']
         value['login'] = 1
+        if value['id'] == 'admin':
+            value['admin'] = 1
         print(value)
-    else:
-        return redirect(url_for("index"))
 
     market = find("market", "name", "market")
+    value['price'] = findPrices()
+    value['post'] = findPosts()
     value['market_coin'] = market['data']['coin']
-    value['market_money'] = market['data']['money']
+    value['market_money'] = value['price'][0]['price']
+    print(value['price'])
 
-    return render_template('purchase.html', result=value)
+    return render_template('post.html', result=value)
 
 
 @app.route('/login')
@@ -103,20 +112,82 @@ def register():
 
 @app.route('/bank')
 def bank():
-    value = {'login': 0}
+    value = {'login': 0, 'admin': 0}
     if session.get("id"):
         temp = find("user", "id", session.get("id"))
         value = temp['data']
         value['login'] = 1
+        if value['id'] == 'admin':
+            value['admin'] = 1
         print(value)
     else:
         return redirect(url_for("index"))
 
     market = find("market", "name", "market")
+    value['price'] = findPrices()
     value['market_coin'] = market['data']['coin']
-    value['market_money'] = market['data']['money']
+    value['market_money'] = value['price'][0]['price']
+    print(value['price'])
 
     return render_template('bank.html', result=value)
+
+
+@app.route('/price')
+def price():
+    if session.get("id"):
+        temp = find("user", "id", session.get("id"))
+        value = temp['data']
+        value['login'] = 1
+        if value['id'] == 'admin':
+            value['admin'] = 1
+        print(value)
+    else:
+        return redirect(url_for("index"))
+
+    market = find("market", "name", "market")
+    value['price'] = findPrices()
+    value['market_coin'] = market['data']['coin']
+    value['market_money'] = value['price'][0]['price']
+    print(value['price'])
+
+    return render_template('price.html', result=value)
+
+
+@app.route('/change', methods=['POST'])
+def priceChange():
+    if session.get("id") is None or session.get("id") != 'admin':
+        return redirect(url_for("index"))
+
+    if dict(request.form):
+        req_data = dict(request.form)
+    else:
+        req_data = request.get_json()
+
+    print(int(req_data['price']))
+    insert("price", {"price": int(req_data['price']), "time": datetime.utcnow()}, 0, 0)
+    return redirect(url_for("index"))
+
+
+@app.route('/postcoin', methods=['POST'])
+def postcoin():
+    if session.get("id") is None:
+        return redirect(url_for("index"))
+
+    if dict(request.form):
+        req_data = dict(request.form)
+    else:
+        req_data = request.get_json()
+
+    price = findPrice()
+    coin = int(req_data['coin'])
+
+    user = find("user", "id", session.get("id"))['data']
+    if user['coin'] < coin:
+        return redirect(url_for("index"))
+
+    insert("post", {"price": price, "seller": session.get("id"), "coin": coin}, 0, 0)
+    update("user", "id", session.get("id"), {"coin": user['coin'] - coin})
+    return redirect(url_for("index"))
 
 
 @app.route('/signin', methods=['POST'])
@@ -176,41 +247,87 @@ def signup():
         return '계정 생성 성공'
 
 
-@app.route('/sell/<coin>')
-def sellCoin(coin):
-    coin = int(coin)
+@app.route('/sell', methods=['POST'])
+def sellCoin():
+    if dict(request.form):
+        req_data = dict(request.form)
+    else:
+        req_data = request.get_json()
+    print(req_data)
+
+    coin = int(req_data['coin'])
     if session.get("id") is None:
         return redirect(url_for("index"))
 
     user = find("user", "id", session.get("id"))['data']
     market = find("market", "name", "market")['data']
+    price = findPrice()
+    print("price", price)
+
+    if market['money'] >= coin * price:
+        tmp = {"money": user['money'] + coin * price, "coin": user['coin'] - coin}
+        update("user", "id", user['id'], tmp)
+
+        tmp = {"money": market['money'] - coin * price, "coin": market['coin'] + coin}
+        update("market", "name", "market", tmp)
     return redirect(url_for("index"))
 
 
-@app.route('/buy/<coin>')
-def buyCoin(coin):
-    coin = int(coin)
+@app.route('/buy', methods=['POST'])
+def buyCoin():
+    if dict(request.form):
+        req_data = dict(request.form)
+    else:
+        req_data = request.get_json()
+    print(req_data)
+
+    coin = int(req_data['coin'])
     if session.get("id") is None:
         return redirect(url_for("index"))
 
     user = find("user", "id", session.get("id"))['data']
     market = find("market", "name", "market")['data']
+    price = findPrice()
+    print("price", price)
+
+    if user['money'] >= coin * price:
+        tmp = {"money": user['money'] - coin * price, "coin": user['coin'] + coin}
+        update("user", "id", user['id'], tmp)
+
+        tmp = {"money": market['money'] + coin * price, "coin": market['coin'] - coin}
+        update("market", "name", "market", tmp)
     return redirect(url_for("index"))
 
 
-@app.route('/purchase/<purchaseId>')
-def purchaseCoin(purchaseId):
-    purchaseId = int(purchaseId)
-    if session.get("id") is None:
+@app.route('/purchase/<seller>/<price>/<coin>')
+def purchaseCoin(seller, price, coin):
+    price = int(price)
+    coin = int(coin)
+    print("pp", seller, price, coin)
+    if session.get("id") is None or session.get("id") == seller:
         return redirect(url_for("index"))
 
     user = find("user", "id", session.get("id"))['data']
+    post = findPost(seller, price, coin)
+
+    if user['money'] >= price * coin:
+        tmp = {"money": user['money'] - coin * price, "coin": user['coin'] + coin}
+        update("user", "id", user['id'], tmp)
+
+        tmp = {"money": market['money'] + coin * price, "coin": market['coin'] - coin}
+        update("user", "id", seller, tmp)
     return redirect(url_for("index"))
 
 
-@app.route('/withdraw/<money>')
-def withdrawMoney(money):
-    money = int(money)
+@app.route('/withdraw', methods=['POST'])
+def withdrawMoney():
+    if dict(request.form):
+        req_data = dict(request.form)
+    else:
+        req_data = request.get_json()
+    print(req_data)
+
+    money = int(req_data['money'])
     if session.get("id") is None:
         return redirect(url_for("index"))
 
@@ -222,9 +339,15 @@ def withdrawMoney(money):
     return redirect(url_for("index"))
 
 
-@app.route('/deposit/<money>')
-def depositMoney(money):
-    money = int(money)
+@app.route('/deposit', methods=['POST'])
+def depositMoney():
+    if dict(request.form):
+        req_data = dict(request.form)
+    else:
+        req_data = request.get_json()
+    print(req_data)
+
+    money = int(req_data['money'])
     if session.get("id") is None:
         return redirect(url_for("index"))
 
