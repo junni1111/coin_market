@@ -36,6 +36,13 @@ def delete(table, key, value):
     collection.delete_one({key: value})
 
 
+def deletePost(seller, price, coin):
+    tmp = {'seller': seller, 'price': price, 'coin': coin}
+    collection = db['post']
+
+    return collection.delete_one(tmp)
+
+
 def findPrice():
     collection = db["price"]
     temp = []

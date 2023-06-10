@@ -247,32 +247,6 @@ def signup():
         return '계정 생성 성공'
 
 
-@app.route('/sell', methods=['POST'])
-def sellCoin():
-    if dict(request.form):
-        req_data = dict(request.form)
-    else:
-        req_data = request.get_json()
-    print(req_data)
-
-    coin = int(req_data['coin'])
-    if session.get("id") is None:
-        return redirect(url_for("index"))
-
-    user = find("user", "id", session.get("id"))['data']
-    market = find("market", "name", "market")['data']
-    price = findPrice()
-    print("price", price)
-
-    if market['money'] >= coin * price:
-        tmp = {"money": user['money'] + coin * price, "coin": user['coin'] - coin}
-        update("user", "id", user['id'], tmp)
-
-        tmp = {"money": market['money'] - coin * price, "coin": market['coin'] + coin}
-        update("market", "name", "market", tmp)
-    return redirect(url_for("index"))
-
-
 @app.route('/buy', methods=['POST'])
 def buyCoin():
     if dict(request.form):
@@ -294,7 +268,7 @@ def buyCoin():
         tmp = {"money": user['money'] - coin * price, "coin": user['coin'] + coin}
         update("user", "id", user['id'], tmp)
 
-        tmp = {"money": market['money'] + coin * price, "coin": market['coin'] - coin}
+        tmp = {"coin": market['coin'] - coin}
         update("market", "name", "market", tmp)
     return redirect(url_for("index"))
 
@@ -314,8 +288,11 @@ def purchaseCoin(seller, price, coin):
         tmp = {"money": user['money'] - coin * price, "coin": user['coin'] + coin}
         update("user", "id", user['id'], tmp)
 
-        tmp = {"money": market['money'] + coin * price, "coin": market['coin'] - coin}
+        seller = find("user", "id", seller)['data']
+        tmp = {"money": seller['money'] + coin * price, "coin": seller['coin'] - coin}
         update("user", "id", seller, tmp)
+
+        deletePost(seller['id'], price, coin)
     return redirect(url_for("index"))
 
 
